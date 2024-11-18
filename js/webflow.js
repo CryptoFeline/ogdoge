@@ -6524,6 +6524,11 @@
             size: parseInt(computedValue, 10)
           };
         }
+        if (destination.unit === "%" || destination.unit === "-") {
+          return {
+            size: parseFloat(computedValue)
+          };
+        }
         if (destination.red != null && destination.green != null && destination.blue != null) {
           return (0, _normalizeColor.normalizeColor)(computedValue);
         }
@@ -6534,20 +6539,35 @@
       var createPluginInstance3 = () => {
         return null;
       };
+      var variableHandlers = {
+        color: {
+          match: ({ red, green, blue, alpha }) => [
+            red,
+            green,
+            blue,
+            alpha
+          ].every((x) => x != null),
+          getValue: ({ red, green, blue, alpha }) => `rgba(${red}, ${green}, ${blue}, ${alpha})`
+        },
+        // Size, Percentage, and Unitless variables.
+        size: {
+          match: ({ size: size2 }) => size2 != null,
+          getValue: ({ size: size2 }, unit) => {
+            switch (unit) {
+              case "-":
+                return size2;
+              default:
+                return `${size2}${unit}`;
+            }
+          }
+        }
+      };
       var renderPlugin2 = (_, refState2, actionItem) => {
-        const objectId = actionItem.config.target.objectId;
-        const unit = actionItem.config.value.unit;
-        const { PLUGIN_VARIABLE: props } = refState2;
-        const { size: size2, red, green, blue, alpha } = props;
-        let value;
-        if (size2 != null) {
-          value = size2 + unit;
-        }
-        if (red != null && blue != null && green != null && alpha != null) {
-          value = `rgba(${red}, ${green}, ${blue}, ${alpha})`;
-        }
-        if (value != null) {
-          document.documentElement.style.setProperty(objectId, value);
+        const { target: { objectId }, value: { unit } } = actionItem.config;
+        const props = refState2.PLUGIN_VARIABLE;
+        const handler = Object.values(variableHandlers).find((h) => h.match(props, unit));
+        if (handler) {
+          document.documentElement.style.setProperty(objectId, handler.getValue(props, unit));
         }
       };
       var clearPlugin2 = (ref, actionItem) => {
@@ -12804,5 +12824,5 @@ timm/lib/timm.js:
  * Webflow: Interactions 2.0: Init
  */
 Webflow.require('ix2').init(
-{"events":{"e":{"id":"e","name":"","animationType":"custom","eventTypeId":"MOUSE_CLICK","action":{"id":"","actionTypeId":"GENERAL_START_ACTION","config":{"delay":0,"easing":"","duration":0,"actionListId":"a","affectedElements":{},"playInReverse":false,"autoStopEventId":"e-2"}},"mediaQueries":["main","medium","small","tiny"],"target":{"appliesTo":"ELEMENT","styleBlockIds":[],"id":"673658b4a33ecfe18d98c867|a1b9517e-064f-2181-f55d-4d503db8cb93"},"targets":[],"config":{"loop":false,"playInReverse":false,"scrollOffsetValue":null,"scrollOffsetUnit":null,"delay":null,"direction":null,"effectIn":null},"createdOn":1731620070335},"e-3":{"id":"e-3","name":"","animationType":"custom","eventTypeId":"MOUSE_CLICK","action":{"id":"","actionTypeId":"GENERAL_START_ACTION","config":{"delay":0,"easing":"","duration":0,"actionListId":"a-2","affectedElements":{},"playInReverse":false,"autoStopEventId":"e-4"}},"mediaQueries":["main","medium","small","tiny"],"target":{"appliesTo":"ELEMENT","styleBlockIds":[],"id":"9bfd1ac1-0b69-454c-06a8-53c71d954aa7"},"targets":[],"config":{"loop":false,"playInReverse":false,"scrollOffsetValue":null,"scrollOffsetUnit":null,"delay":null,"direction":null,"effectIn":null},"createdOn":1731620202882},"e-5":{"id":"e-5","name":"","animationType":"custom","eventTypeId":"PAGE_START","action":{"id":"","actionTypeId":"GENERAL_START_ACTION","config":{"delay":0,"easing":"","duration":0,"actionListId":"a-3","affectedElements":{},"playInReverse":false,"autoStopEventId":"e-6"}},"mediaQueries":["main","medium","small","tiny"],"target":{"appliesTo":"PAGE","styleBlockIds":[],"id":"673658b4a33ecfe18d98c867"},"targets":[],"config":{"loop":true,"playInReverse":false,"scrollOffsetValue":null,"scrollOffsetUnit":null,"delay":null,"direction":null,"effectIn":null},"createdOn":1731620767322}},"actionLists":{"a":{"id":"a","title":"Popoff","actionItemGroups":[{"actionItems":[{"id":"a-n","actionTypeId":"GENERAL_DISPLAY","config":{"delay":0,"easing":"","duration":0,"value":"none","target":{"selector":".popup","selectorGuids":["a3a5e6ec-6de8-59e6-0ee0-a949207eb5ac"]}}}]}],"createdOn":1731620093979,"useFirstGroupAsInitialState":false},"a-2":{"id":"a-2","title":"Open Pop","actionItemGroups":[{"actionItems":[{"id":"a-2-n","actionTypeId":"GENERAL_DISPLAY","config":{"delay":0,"easing":"","duration":0,"value":"block","target":{"selector":".popup","selectorGuids":["a3a5e6ec-6de8-59e6-0ee0-a949207eb5ac"]}}}]}],"createdOn":1731620214062,"useFirstGroupAsInitialState":false},"a-3":{"id":"a-3","title":"Pulse","actionItemGroups":[{"actionItems":[{"id":"a-3-n-2","actionTypeId":"TRANSFORM_SCALE","config":{"delay":0,"easing":"easeInOut","duration":100,"target":{"id":"673658b4a33ecfe18d98c867|22cc5da8-460c-39af-9e73-c64c6bb72a8b"},"xValue":1.2,"yValue":1.2,"zValue":1,"locked":true}}]},{"actionItems":[{"id":"a-3-n-3","actionTypeId":"TRANSFORM_SCALE","config":{"delay":0,"easing":"","duration":500,"target":{"id":"673658b4a33ecfe18d98c867|22cc5da8-460c-39af-9e73-c64c6bb72a8b"},"xValue":0.9,"yValue":0.9,"locked":true}}]}],"createdOn":1731620771986,"useFirstGroupAsInitialState":false}},"site":{"mediaQueries":[{"key":"main","min":992,"max":10000},{"key":"medium","min":768,"max":991},{"key":"small","min":480,"max":767},{"key":"tiny","min":0,"max":479}]}}
+{"events":{"e":{"id":"e","name":"","animationType":"custom","eventTypeId":"MOUSE_CLICK","action":{"id":"","actionTypeId":"GENERAL_START_ACTION","config":{"delay":0,"easing":"","duration":0,"actionListId":"a","affectedElements":{},"playInReverse":false,"autoStopEventId":"e-2"}},"mediaQueries":["main","medium","small","tiny"],"target":{"id":"673658b4a33ecfe18d98c867|a1b9517e-064f-2181-f55d-4d503db8cb93","appliesTo":"ELEMENT","styleBlockIds":[]},"targets":[{"id":"673658b4a33ecfe18d98c867|a1b9517e-064f-2181-f55d-4d503db8cb93","appliesTo":"ELEMENT","styleBlockIds":[]}],"config":{"loop":false,"playInReverse":false,"scrollOffsetValue":null,"scrollOffsetUnit":null,"delay":null,"direction":null,"effectIn":null},"createdOn":1731620070335},"e-3":{"id":"e-3","name":"","animationType":"custom","eventTypeId":"MOUSE_CLICK","action":{"id":"","actionTypeId":"GENERAL_START_ACTION","config":{"delay":0,"easing":"","duration":0,"actionListId":"a-2","affectedElements":{},"playInReverse":false,"autoStopEventId":"e-4"}},"mediaQueries":["main","medium","small","tiny"],"target":{"id":"9bfd1ac1-0b69-454c-06a8-53c71d954aa7","appliesTo":"ELEMENT","styleBlockIds":[]},"targets":[{"id":"9bfd1ac1-0b69-454c-06a8-53c71d954aa7","appliesTo":"ELEMENT","styleBlockIds":[]}],"config":{"loop":false,"playInReverse":false,"scrollOffsetValue":null,"scrollOffsetUnit":null,"delay":null,"direction":null,"effectIn":null},"createdOn":1731620202882},"e-5":{"id":"e-5","name":"","animationType":"custom","eventTypeId":"PAGE_START","action":{"id":"","actionTypeId":"GENERAL_START_ACTION","config":{"delay":0,"easing":"","duration":0,"actionListId":"a-3","affectedElements":{},"playInReverse":false,"autoStopEventId":"e-6"}},"mediaQueries":["main","medium","small","tiny"],"target":{"id":"673658b4a33ecfe18d98c867","appliesTo":"PAGE","styleBlockIds":[]},"targets":[{"id":"673658b4a33ecfe18d98c867","appliesTo":"PAGE","styleBlockIds":[]}],"config":{"loop":true,"playInReverse":false,"scrollOffsetValue":null,"scrollOffsetUnit":null,"delay":null,"direction":null,"effectIn":null},"createdOn":1731620767322},"e-7":{"id":"e-7","name":"","animationType":"preset","eventTypeId":"MOUSE_CLICK","action":{"id":"","actionTypeId":"GENERAL_START_ACTION","config":{"delay":0,"easing":"","duration":0,"actionListId":"a-4","affectedElements":{},"playInReverse":false,"autoStopEventId":"e-8"}},"mediaQueries":["main","medium","small","tiny"],"target":{"id":"673658b4a33ecfe18d98c867|7bf7ced6-73af-4775-a8e1-3ff36d98a552","appliesTo":"ELEMENT","styleBlockIds":[]},"targets":[],"config":{"loop":false,"playInReverse":false,"scrollOffsetValue":null,"scrollOffsetUnit":null,"delay":null,"direction":null,"effectIn":null},"createdOn":1731934028678},"e-9":{"id":"e-9","name":"","animationType":"custom","eventTypeId":"MOUSE_CLICK","action":{"id":"","actionTypeId":"GENERAL_START_ACTION","config":{"delay":0,"easing":"","duration":0,"actionListId":"a-5","affectedElements":{},"playInReverse":false,"autoStopEventId":"e-10"}},"mediaQueries":["main","medium","small","tiny"],"target":{"appliesTo":"ELEMENT","styleBlockIds":[],"id":"673658b4a33ecfe18d98c867|22cc5da8-460c-39af-9e73-c64c6bb72a8b"},"targets":[],"config":{"loop":false,"playInReverse":false,"scrollOffsetValue":null,"scrollOffsetUnit":null,"delay":null,"direction":null,"effectIn":null},"createdOn":1731934188488}},"actionLists":{"a":{"id":"a","title":"Popoff","actionItemGroups":[{"actionItems":[{"id":"a-n","actionTypeId":"GENERAL_DISPLAY","config":{"delay":0,"easing":"","duration":0,"target":{"selector":".popup","selectorGuids":["a3a5e6ec-6de8-59e6-0ee0-a949207eb5ac"]},"value":"none"}}]}],"useFirstGroupAsInitialState":false,"createdOn":1731620093979},"a-2":{"id":"a-2","title":"Open Pop","actionItemGroups":[{"actionItems":[{"id":"a-2-n","actionTypeId":"GENERAL_DISPLAY","config":{"delay":0,"easing":"","duration":0,"target":{"selector":".popup","selectorGuids":["a3a5e6ec-6de8-59e6-0ee0-a949207eb5ac"]},"value":"block"}}]}],"useFirstGroupAsInitialState":false,"createdOn":1731620214062},"a-3":{"id":"a-3","title":"Pulse","actionItemGroups":[{"actionItems":[{"id":"a-3-n-2","actionTypeId":"TRANSFORM_SCALE","config":{"delay":0,"easing":"easeInOut","duration":100,"target":{"id":"673658b4a33ecfe18d98c867|22cc5da8-460c-39af-9e73-c64c6bb72a8b"},"xValue":1.2,"yValue":1.2,"zValue":1,"locked":true}}]},{"actionItems":[{"id":"a-3-n-3","actionTypeId":"TRANSFORM_SCALE","config":{"delay":0,"easing":"","duration":500,"target":{"id":"673658b4a33ecfe18d98c867|22cc5da8-460c-39af-9e73-c64c6bb72a8b"},"xValue":0.9,"yValue":0.9,"locked":true}}]}],"useFirstGroupAsInitialState":false,"createdOn":1731620771986},"a-4":{"id":"a-4","title":"Popoff 2","actionItemGroups":[{"actionItems":[{"id":"a-4-n","actionTypeId":"GENERAL_DISPLAY","config":{"delay":0,"easing":"","duration":0,"target":{"selector":".popup-2","selectorGuids":["ac4b92e0-7f5e-9a58-d979-ecf0cef94c85"]},"value":"none"}}]}],"useFirstGroupAsInitialState":false,"createdOn":1731620093979},"a-5":{"id":"a-5","title":"Open Pop 2","actionItemGroups":[{"actionItems":[{"id":"a-5-n","actionTypeId":"GENERAL_DISPLAY","config":{"delay":0,"easing":"","duration":0,"target":{"selector":".popup-2","selectorGuids":["ac4b92e0-7f5e-9a58-d979-ecf0cef94c85"]},"value":"block"}}]}],"useFirstGroupAsInitialState":false,"createdOn":1731620214062}},"site":{"mediaQueries":[{"key":"main","min":992,"max":10000},{"key":"medium","min":768,"max":991},{"key":"small","min":480,"max":767},{"key":"tiny","min":0,"max":479}]}}
 );
